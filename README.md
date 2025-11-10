@@ -1,3 +1,9 @@
+<p align="center">
+  <img src="docs/assets/god-logo.png" alt="GOD Logo" width="400"/>
+</p>
+
+<h1 align="center">GOD — Global Operations Deity</h1>
+
 # GOD — Global Operations Deity
 
 🚀 **Professional-grade global help indexer with BLUX integration**
