@@ -1,6 +1,6 @@
 """GOD CLI - Global Operations Deity."""
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __author__ = "Outer Void Team"
 __email__ = "outervoid.blux@gmail.com"
 

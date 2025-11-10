@@ -21,3 +21,33 @@
 - **Windows Support**: Improved UTF-8 handling
 - **Code Quality**: Professional structure with type hints
 - **Testing**: Comprehensive test coverage with pytest
+## [1.0.1] - 2025-11-10
+
+### Fixed
+- Makefile installation issues
+- Test suite failures due to missing __main__.py
+- Version import errors
+- Package structure improvements
+
+### Improved
+- Development workflow with better Makefile targets
+- Test reliability and error handling
+- Documentation and project structure
+
+## [1.0.1] - 2025-11-10
+
+### Added
+- One-line installers using curl and wget
+- Improved installation documentation
+- Better virtual environment handling
+
+### Fixed
+- Makefile installation issues
+- Test suite failures due to missing __main__.py
+- Version import errors
+- Package structure improvements
+
+### Improved
+- Development workflow with better Makefile targets
+- Test reliability and error handling
+- Installation script robustness for remote execution

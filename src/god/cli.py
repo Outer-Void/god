@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-GOD CLI v1.0.0 - Professional Grade Global Operations Deity.
+GOD CLI v1.0.1 - Professional Grade Global Operations Deity.
 Enhanced with security, performance, and enterprise features.
 """
 
@@ -830,7 +830,7 @@ def version_callback(value: bool):
             try:
                 from god import __version__ as v
             except Exception:
-                v = "1.0.0"
+                v = "1.0.1"
         console.print(f"🚀 [bold cyan]GOD v{v}[/bold cyan] - Professional Grade")
         raise typer.Exit()
 
