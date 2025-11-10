@@ -1,4 +1,4 @@
-.PHONY: help install install-dev dev test lint clean run build docs
+.PHONY: help install install-dev dev test lint clean run build docs publish publish-test check-packages
 
 # Default target
 help:
@@ -97,6 +97,14 @@ build:
 	fi
 	@echo "📦 Build complete! Check dist/ directory"
 
+# Documentation
+docs:
+	@echo "Generating documentation..."
+	@mkdir -p docs
+	./god build -f html -o docs/index.html
+	./god build -f md -o docs/commands.md
+	@echo "📚 Documentation generated in docs/"
+
 # Publishing
 publish-test: build
 	@echo "📦 Publishing to TestPyPI..."
@@ -124,14 +132,6 @@ check-packages: build
 	else \
 		pip install twine --quiet && twine check dist/*; \
 	fi
-
-# Documentation
-docs:
-	@echo "Generating documentation..."
-	@mkdir -p docs
-	./god build -f html -o docs/index.html
-	./god build -f md -o docs/commands.md
-	@echo "📚 Documentation generated in docs/"
 
 # Cleaning
 clean:
