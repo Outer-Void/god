@@ -5,8 +5,8 @@ Thank you for your interest in contributing!
 ## Development Setup
 
 ```bash
-git clone https://github.com/outervoid/god-cli.git
-cd god-cli
+git clone https://github.com/Outer-Void/god.git
+cd god
 ./install_deps.sh --dev
 source activate_god.sh
 ```
