@@ -1,0 +1,15 @@
+name: Bug report
+description: Create a report to help us improve
+labels: [bug]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: GOD CLI Version
+      placeholder: e.g., 1.0.0

@@ -1,0 +1,4 @@
+# Core dependencies for GOD CLI v1.0.0
+typer>=0.20.0
+rich>=13.8.0
+click>=8.1.7
