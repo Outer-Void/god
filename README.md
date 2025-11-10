@@ -42,7 +42,7 @@ pip install god-cli
 ### From Source
 ```bash
 git clone https://github.com/Outer-Void/god.git
-cd god-cli
+cd god
 ./install_deps.sh
 source activate_god.sh
 ```
