@@ -16,122 +16,91 @@ help:
 	@echo "  make format       - Format code"
 	@echo "  make clean        - Clean build artifacts"
 	@echo ""
-	@echo "Usage:"
-	@echo "  make run          - Run GOD CLI"
+	@echo "Building:"
 	@echo "  make build        - Build distribution packages"
 	@echo "  make docs         - Generate documentation"
+	@echo ""
+	@echo "Publishing:"
+	@echo "  make check-packages - Validate package distribution"
+	@echo "  make publish-test   - Publish to TestPyPI"
+	@echo "  make publish        - Publish to PyPI"
+	@echo ""
+	@echo "Usage:"
+	@echo "  make run          - Run GOD CLI"
 	@echo ""
 
 # Installation
 install:
 	@echo "Installing production dependencies..."
-	./install_deps.sh
+	pip install -e .
 
 install-dev:
 	@echo "Installing development dependencies..."
-	./install_deps.sh --dev
+	pip install -e ".[dev]"
+	@echo "✓ Development dependencies installed"
 
 # Development environment setup
 dev: install-dev
 	@echo "🚀 Development environment ready!"
-	@echo "Run: source .venv/bin/activate  # Activate virtual environment"
-	@echo "Then: make test                 # Run tests"
+	@echo "Run: make test                 # Run tests"
 
 # Testing
 test:
-	@if [ -d ".venv" ]; then \
-		. .venv/bin/activate && pytest tests/ -v; \
-	else \
-		echo "Virtual environment not found. Run: make install-dev"; \
-		exit 1; \
-	fi
+	@pytest tests/ -v
 
 test-cov:
-	@if [ -d ".venv" ]; then \
-		. .venv/bin/activate && pytest tests/ -v --cov=god --cov-report=html; \
-	else \
-		echo "Virtual environment not found. Run: make install-dev"; \
-		exit 1; \
-	fi
+	@pytest tests/ -v --cov=god --cov-report=html
 
 # Linting
 lint:
-	@if [ -d ".venv" ]; then \
-		. .venv/bin/activate && ruff check src/god tests/; \
-	else \
-		echo "Virtual environment not found. Run: make install-dev"; \
-		exit 1; \
-	fi
+	@ruff check src/god tests/
 
 format:
-	@if [ -d ".venv" ]; then \
-		. .venv/bin/activate && black src/god tests/ && isort src/god tests/; \
-	else \
-		echo "Virtual environment not found. Run: make install-dev"; \
-		exit 1; \
-	fi
+	@black src/god tests/ && isort src/god tests/
 
 # Running
 run:
-	./god --help
+	@python -m god --help
 
 run-build:
-	./god build --limit 10 -f console
+	@python -m god build --limit 10 -f console
 
 run-stats:
-	./god stats
+	@python -m god stats
 
 # Building
 build:
 	@echo "Installing build dependencies..."
-	@if [ -d ".venv" ]; then \
-		. .venv/bin/activate && pip install build --quiet; \
-	else \
-		pip install build --quiet; \
-	fi
+	@pip install build --quiet
 	@echo "Building distribution packages..."
-	@if [ -d ".venv" ]; then \
-		. .venv/bin/activate && python -m build; \
-	else \
-		python -m build; \
-	fi
+	@python -m build
 	@echo "📦 Build complete! Check dist/ directory"
 
 # Documentation
 docs:
 	@echo "Generating documentation..."
 	@mkdir -p docs
-	./god build -f html -o docs/index.html
-	./god build -f md -o docs/commands.md
+	@python -m god build -f html -o docs/index.html
+	@python -m god build -f md -o docs/commands.md
 	@echo "📚 Documentation generated in docs/"
 
 # Publishing
 publish-test: build
 	@echo "📦 Publishing to TestPyPI..."
-	@if [ -d ".venv" ]; then \
-		. .venv/bin/activate && pip install twine --quiet && twine upload --repository testpypi dist/*; \
-	else \
-		pip install twine --quiet && twine upload --repository testpypi dist/*; \
-	fi
+	@pip install twine --quiet
+	@twine upload --repository testpypi dist/*
 	@echo "✅ Published to TestPyPI: https://test.pypi.org/project/god-cli/"
 
 publish: build
 	@echo "🚀 Publishing to PyPI..."
-	@if [ -d ".venv" ]; then \
-		. .venv/bin/activate && pip install twine --quiet && twine upload dist/*; \
-	else \
-		pip install twine --quiet && twine upload dist/*; \
-	fi
+	@pip install twine --quiet
+	@twine upload dist/*
 	@echo "🎉 Published to PyPI: https://pypi.org/project/god-cli/"
 
-# Validation
 check-packages: build
 	@echo "🔍 Checking package validity..."
-	@if [ -d ".venv" ]; then \
-		. .venv/bin/activate && pip install twine --quiet && twine check dist/*; \
-	else \
-		pip install twine --quiet && twine check dist/*; \
-	fi
+	@pip install twine --quiet
+	@twine check dist/*
 
 # Cleaning
 clean:
@@ -155,3 +124,9 @@ clean-all: clean
 # Quick development cycle
 dev-cycle: format lint test
 	@echo "✅ Development cycle complete: format → lint → test"
+
+# Verification
+verify:
+	@echo "🔍 Verifying installation..."
+	@python -c "from god.cli import main_cli; print('✓ CLI importable')" && \
+	python -m god --version >/dev/null 2>&1 && echo "✓ CLI executable" || echo "⚠ CLI execution check failed"

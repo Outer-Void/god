@@ -849,7 +849,9 @@ def main(
             return
         else:
             # Show help if no command provided
-            console.print("[yellow]No command provided. Use --help to see available commands.[/yellow]")
+            console.print(
+                "[yellow]No command provided. Use --help to see available commands.[/yellow]"
+            )
             raise typer.Exit(1)
 
 
