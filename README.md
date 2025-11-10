@@ -41,7 +41,7 @@ pip install god-cli
 
 ### From Source
 ```bash
-git clone https://github.com/outervoid/god-cli.git
+git clone https://github.com/Outer-Void/god.git
 cd god-cli
 ./install_deps.sh
 source activate_god.sh
@@ -109,15 +109,15 @@ make clean
 ## Requirements
 
 - Python 3.8+
-- typer[all] >= 0.12.0
-- rich >= 13.7.0
-- click >= 8.1.0
+- typer>= 0.20.0
+- rich>= 13.7.0
+- click>= 8.1.0
 
 ## License
 
-MIT License - See [LICENSE](LICENSE)
+MIT License - See [LICENSE](./LICENSE)
 
 ## Support
 
-- Issues: [GitHub Issues](https://github.com/outervoid/god-cli/issues)
+- Issues: [GitHub Issues](https://github.com/Outer-Void/god/issues)
 - Email: outervoid.blux@gmail.com
