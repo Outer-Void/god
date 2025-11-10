@@ -828,7 +828,7 @@ def version_callback(value: bool):
             v = _md.version("god-cli")
         except Exception:
             try:
-                from god import version as v
+                from god import __version__ as v
             except Exception:
                 v = "1.0.0"
         console.print(f"🚀 [bold cyan]GOD v{v}[/bold cyan] - Professional Grade")
@@ -849,9 +849,7 @@ def main(
             return
         else:
             # Show help if no command provided
-            console.print(
-                "[yellow]No command provided. Use --help to see available commands.[/yellow]"
-            )
+            console.print("[yellow]No command provided. Use --help to see available commands.[/yellow]")
             raise typer.Exit(1)
 
 
