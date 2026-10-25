@@ -14,7 +14,7 @@ license-files = ["LICENSE"]
 requires-python = ">=3.11"
 # GOD reads .blux/ only through the canonical BLUX SDK. blux-sdk is not on PyPI yet: install it from the
 # tagged BLUX repository first (README "Install").
-dependencies = ["blux-sdk>=0.1.0,<0.2"]
+dependencies = ["blux-sdk>=0.1.0,<0.3"]
 keywords = ["blux", "discovery", "registry", "capabilities"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
