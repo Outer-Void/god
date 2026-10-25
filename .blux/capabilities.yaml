@@ -1,0 +1,113 @@
+# GOD capabilities for BLUX (docs/BLUX.md). Discovery only: nothing here runs a capability, executes a
+# discovered program or evaluates a policy. Malformed manifests and duplicates are results, not failures.
+contract: blux.capability-set
+contract_version: "1.0"
+capabilities:
+  - contract: blux.capability
+    contract_version: "1.0"
+    capability_id: capability.discover
+    version: 2.0.0
+    summary: "List the capabilities declared by every .blux/ under the roots, with duplicates and malformed manifests."
+    contract_versions: ["1.0"]
+    input_schema: {"type": "object", "additionalProperties": false, "properties": {"roots": {"type": "array", "minItems": 1, "maxItems": 64, "items": {"type": "string", "minLength": 1, "maxLength": 4096}, "description": "Directories to search (relative to the caller's working directory). Default: [\".\"]."}, "query": {"type": "string", "minLength": 1, "maxLength": 256}, "project": {"type": "string", "minLength": 1, "maxLength": 256}, "max_side_effects": {"enum": ["none", "read", "write", "external", "destructive"]}, "provider_kind": {"type": "string", "minLength": 1, "maxLength": 256}, "labels": {"type": "object", "additionalProperties": {"type": "string"}}}}
+    output_schema: {"type": "object", "required": ["contract", "version", "tool", "sdk", "linkage", "index", "capabilities", "duplicates", "problems"], "properties": {"contract": {"const": "god.capabilities"}, "version": {"const": 1}, "linkage": {"type": "object", "required": ["operation_id", "capability_id", "system"]}}}
+    side_effects: read
+    required_permissions: ["fs:read:roots"]
+    idempotent: true
+    timeout_ms: 120000
+    provider:
+      repository: Outer-Void/god
+      kind: subprocess
+      entrypoint: god blux-capability capability.discover
+    labels:
+      authority: discovery
+  - contract: blux.capability
+    contract_version: "1.0"
+    capability_id: capability.describe
+    version: 2.0.0
+    summary: "The full descriptor of one capability and the project that provides it."
+    contract_versions: ["1.0"]
+    input_schema: {"type": "object", "additionalProperties": false, "properties": {"roots": {"type": "array", "minItems": 1, "maxItems": 64, "items": {"type": "string", "minLength": 1, "maxLength": 4096}, "description": "Directories to search (relative to the caller's working directory). Default: [\".\"]."}, "capability_id": {"type": "string", "minLength": 1, "maxLength": 256}, "project": {"type": "string", "minLength": 1, "maxLength": 256}}, "required": ["capability_id"]}
+    output_schema: {"type": "object", "required": ["contract", "version", "tool", "sdk", "linkage", "capability", "project"], "properties": {"contract": {"const": "god.capability"}, "version": {"const": 1}, "linkage": {"type": "object", "required": ["operation_id", "capability_id", "system"]}}}
+    side_effects: read
+    required_permissions: ["fs:read:roots"]
+    idempotent: true
+    timeout_ms: 120000
+    provider:
+      repository: Outer-Void/god
+      kind: subprocess
+      entrypoint: god blux-capability capability.describe
+    labels:
+      authority: discovery
+  - contract: blux.capability
+    contract_version: "1.0"
+    capability_id: capability.compat
+    version: 2.0.0
+    summary: "Version compatibility lookup: which providers satisfy a semver range and the caller's contract version."
+    contract_versions: ["1.0"]
+    input_schema: {"type": "object", "additionalProperties": false, "properties": {"roots": {"type": "array", "minItems": 1, "maxItems": 64, "items": {"type": "string", "minLength": 1, "maxLength": 4096}, "description": "Directories to search (relative to the caller's working directory). Default: [\".\"]."}, "capability_id": {"type": "string", "minLength": 1, "maxLength": 256}, "project": {"type": "string", "minLength": 1, "maxLength": 256}, "version_range": {"type": "string", "minLength": 1, "maxLength": 256}, "contract_version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+$"}}, "required": ["capability_id"]}
+    output_schema: {"type": "object", "required": ["contract", "version", "tool", "sdk", "linkage", "verdict", "matches", "rejected"], "properties": {"contract": {"const": "god.compatibility"}, "version": {"const": 1}, "linkage": {"type": "object", "required": ["operation_id", "capability_id", "system"]}}}
+    side_effects: read
+    required_permissions: ["fs:read:roots"]
+    idempotent: true
+    timeout_ms: 120000
+    provider:
+      repository: Outer-Void/god
+      kind: subprocess
+      entrypoint: god blux-capability capability.compat
+    labels:
+      authority: discovery
+  - contract: blux.capability
+    contract_version: "1.0"
+    capability_id: project.describe
+    version: 2.0.0
+    summary: "A project's manifest, capabilities and declared policy (reported, never evaluated)."
+    contract_versions: ["1.0"]
+    input_schema: {"type": "object", "additionalProperties": false, "properties": {"roots": {"type": "array", "minItems": 1, "maxItems": 64, "items": {"type": "string", "minLength": 1, "maxLength": 4096}, "description": "Directories to search (relative to the caller's working directory). Default: [\".\"]."}, "project": {"type": "string", "minLength": 1, "maxLength": 256}}, "required": ["project"]}
+    output_schema: {"type": "object", "required": ["contract", "version", "tool", "sdk", "linkage", "project", "capabilities", "policy"], "properties": {"contract": {"const": "god.project"}, "version": {"const": 1}, "linkage": {"type": "object", "required": ["operation_id", "capability_id", "system"]}}}
+    side_effects: read
+    required_permissions: ["fs:read:roots"]
+    idempotent: true
+    timeout_ms: 120000
+    provider:
+      repository: Outer-Void/god
+      kind: subprocess
+      entrypoint: god blux-capability project.describe
+    labels:
+      authority: discovery
+  - contract: blux.capability
+    contract_version: "1.0"
+    capability_id: command.discover
+    version: 2.0.0
+    summary: "Commands on PATH and which capability entrypoints resolve, found statically. Nothing is executed."
+    contract_versions: ["1.0"]
+    input_schema: {"type": "object", "additionalProperties": false, "properties": {"roots": {"type": "array", "minItems": 1, "maxItems": 64, "items": {"type": "string", "minLength": 1, "maxLength": 4096}, "description": "Directories to search (relative to the caller's working directory). Default: [\".\"]."}, "pattern": {"type": "string", "minLength": 1, "maxLength": 256}, "path": {"type": "string", "maxLength": 65536}, "declared": {"type": "boolean"}}}
+    output_schema: {"type": "object", "required": ["contract", "version", "tool", "sdk", "linkage", "commands", "declared", "warnings"], "properties": {"contract": {"const": "god.commands"}, "version": {"const": 1}, "linkage": {"type": "object", "required": ["operation_id", "capability_id", "system"]}}}
+    side_effects: read
+    required_permissions: ["fs:read:path", "fs:read:roots"]
+    idempotent: true
+    timeout_ms: 120000
+    provider:
+      repository: Outer-Void/god
+      kind: subprocess
+      entrypoint: god blux-capability command.discover
+    labels:
+      authority: discovery
+  - contract: blux.capability
+    contract_version: "1.0"
+    capability_id: registry.index
+    version: 2.0.0
+    summary: "Index the roots into GOD's local cache (revalidated by stat signature, rebuilt on version change)."
+    contract_versions: ["1.0"]
+    input_schema: {"type": "object", "additionalProperties": false, "properties": {"roots": {"type": "array", "minItems": 1, "maxItems": 64, "items": {"type": "string", "minLength": 1, "maxLength": 4096}, "description": "Directories to search (relative to the caller's working directory). Default: [\".\"]."}, "refresh": {"type": "boolean"}, "index": {"type": "string", "minLength": 1, "maxLength": 4096}}}
+    output_schema: {"type": "object", "required": ["contract", "version", "tool", "sdk", "linkage", "index", "problems", "duplicates"], "properties": {"contract": {"const": "god.index-summary"}, "version": {"const": 1}, "linkage": {"type": "object", "required": ["operation_id", "capability_id", "system"]}}}
+    side_effects: write
+    required_permissions: ["fs:read:roots", "fs:write:god-cache"]
+    idempotent: true
+    timeout_ms: 120000
+    provider:
+      repository: Outer-Void/god
+      kind: subprocess
+      entrypoint: god blux-capability registry.index
+    labels:
+      authority: discovery

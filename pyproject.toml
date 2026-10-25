@@ -1,88 +1,71 @@
 [build-system]
-requires = ["setuptools>=68.0", "wheel"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "god-cli"
-version = "1.0.1"
-description = "Professional-grade global help indexer with BLUX integration"
+version = "2.0.0"
+description = "GOD: discovery for the BLUX ecosystem (projects, capabilities, commands). It never runs what it finds."
 readme = "README.md"
-requires-python = ">=3.8"
+authors = [{ name = "Outer Void", email = "outervoid.blux@gmail.com" }]
+# Licence unchanged from the existing LICENSE file; any change is an owner decision (credits UNR-008).
 license = "MIT"
-authors = [
-    {name = "OuterVoid Team, Justadudeinspace", email = "outervoid.blux@gmail.com"}
-]
-keywords = ["cli", "help", "documentation", "indexer", "blux", "god"]
+license-files = ["LICENSE"]
+requires-python = ">=3.11"
+# GOD reads .blux/ only through the canonical BLUX SDK. blux-sdk is not on PyPI yet: install it from the
+# tagged BLUX repository first (README "Install").
+dependencies = ["blux-sdk>=0.1.0,<0.2"]
+keywords = ["blux", "discovery", "registry", "capabilities"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
     "Intended Audience :: Developers",
-    "Intended Audience :: System Administrators",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
-]
-
-dependencies = [
-    "typer>=0.20.0",
-    "rich>=13.8.0",
-    "click>=8.1.7",
+    "Programming Language :: Python :: 3.13",
 ]
 
 [project.optional-dependencies]
-dev = [
-    "pytest>=8.2.0",
-    "pytest-cov>=4.1.0",
-    "pytest-timeout>=2.3.0",
-    "ruff>=0.4.0",
-    "mypy>=1.10.0",
-    "black>=24.4.0",
-    "isort>=5.13.2",
-]
-
-[project.scripts]
-god = "god.cli:main_cli"
+dev = ["pytest>=8", "ruff>=0.6", "mypy>=1.10", "build>=1.2", "types-PyYAML"]
 
 [project.urls]
 Homepage = "https://github.com/Outer-Void/god"
-Documentation = "https://github.com/Outer-Void/god/wiki"
 Repository = "https://github.com/Outer-Void/god"
-Issues = "https://github.com/Outer-Void/god/issues"
+Changelog = "https://github.com/Outer-Void/god/blob/main/CHANGELOG.md"
 
-[tool.setuptools]
-package-dir = {"" = "src"}
+[project.scripts]
+god = "god.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+include = ["god*"]
+
+[tool.setuptools.package-data]
+god = ["py.typed"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "S", "A", "BLE", "RUF", "SIM", "PL", "C4", "N"]
+ignore = ["PLR0911", "PLR0912", "PLR0913", "PLR0915", "PLR2004", "PLC0415", "S101", "S603", "S607"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S", "PLR", "BLE", "PLW1510", "N"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["god"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+mypy_path = ["src"]
+packages = ["god"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-python_files = ["test_*.py"]
-python_classes = ["Test*"]
-python_functions = ["test_*"]
-addopts = "-v --strict-markers"
-markers = [
-    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
-]
-
-[tool.black]
-line-length = 100
-target-version = ["py38", "py39", "py310", "py311", "py312"]
-include = '\.pyi?$'
-
-[tool.isort]
-profile = "black"
-line_length = 100
-
-[tool.ruff]
-line-length = 100
-target-version = "py38"
-
-[tool.mypy]
-python_version = "3.8"
-warn_return_any = true
-warn_unused_configs = true
-disallow_untyped_defs = false
+addopts = "-ra --strict-markers"
+xfail_strict = true

@@ -1,0 +1,19 @@
+# Default policy for running GOD through BLUX. Discovery is read-only and open to every actor; only
+# registry.index writes, and only GOD's own cache file.
+contract: blux.policy
+contract_version: "1.0"
+policy_id: god-default
+default_effect: deny
+rules:
+  - rule_id: allow-discovery
+    effect: allow
+    capabilities: ["capability.discover", "capability.describe", "capability.compat", "project.describe", "command.discover"]
+    actor_types: [user, service, agent]
+    max_side_effects: read
+    grants: ["fs:read:roots", "fs:read:path"]
+  - rule_id: allow-indexing
+    effect: allow
+    capabilities: ["registry.index"]
+    actor_types: [user, service]
+    max_side_effects: write
+    grants: ["fs:read:roots", "fs:write:god-cache"]

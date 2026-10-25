@@ -1,9 +1,7 @@
-"""GOD CLI - Global Operations Deity."""
+"""GOD: discovery for the BLUX ecosystem. It finds and describes projects, capabilities and commands.
 
-__version__ = "1.0.1"
-__author__ = "Outer Void Team"
-__email__ = "outervoid.blux@gmail.com"
+GOD never runs a capability, never executes a discovered program, and never decides whether something is
+allowed: that is BLUX's runtime and policy engine. Importing this package has no side effects.
+"""
 
-from god.cli import main_cli
-
-__all__ = ["main_cli"]
+__version__ = "2.0.0"

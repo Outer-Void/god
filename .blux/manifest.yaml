@@ -1,0 +1,12 @@
+contract: blux.project
+contract_version: "1.0"
+project_id: god
+name: GOD
+description: Discovery for the BLUX ecosystem. Finds and describes projects, capabilities and commands; never runs them.
+# integrated (ADR-0002): GOD reads .blux/ through blux-sdk on its main path. It does not need a BLUX runtime.
+role: integrated
+repository: Outer-Void/god
+capabilities: capabilities.yaml
+policy: policy.yaml
+labels:
+  owner: outer-void

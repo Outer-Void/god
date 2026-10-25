@@ -2,7 +2,8 @@
 
 ## Supported Versions
 
-- 1.0.x ✅
+- 2.x ✅
+- 1.x ❌ (it executed every program on PATH; upgrade)
 
 ## Reporting Vulnerabilities
 
