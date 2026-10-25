@@ -66,6 +66,11 @@ Python 3.11+. GOD 2.0 replaces GOD 1.x's help indexer; see [docs/AUDIT-1.0.md](d
 make ci   # ruff, mypy --strict, pytest, clean-venv wheel check, GOD checks its own .blux/
 ```
 
-## Licence
+## License
 
-MIT, see [LICENSE](LICENSE).
+**Outer-Void Proprietary License** (proprietary). Copyright (c) 2026 Outer-Void / Justadudeinspace (JADIS). All rights reserved. See [LICENSE](LICENSE).
+
+Copies and releases obtained before 2026-10-25 remain available under the MIT License they were
+published with; every change and release from that date on is proprietary.
+
+Contact: outervoid.blux@gmail.com (main) · theoutervoid@outlook.com (fallback)

@@ -9,7 +9,7 @@ description = "GOD: discovery for the BLUX ecosystem (projects, capabilities, co
 readme = "README.md"
 authors = [{ name = "Outer Void", email = "outervoid.blux@gmail.com" }]
 # Licence unchanged from the existing LICENSE file; any change is an owner decision (credits UNR-008).
-license = "MIT"
+license = "LicenseRef-OuterVoid-Proprietary"
 license-files = ["LICENSE"]
 requires-python = ">=3.11"
 # GOD reads .blux/ only through the canonical BLUX SDK. blux-sdk is not on PyPI yet: install it from the
