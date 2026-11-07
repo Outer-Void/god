@@ -28,8 +28,9 @@ the current directory. Exit codes: `0` ok, `1` check failed or nothing matched, 
 ## What it reports
 
 - **Problems**: a `.blux/` the SDK rejects (bad YAML with its line, wrong contract, unsupported contract
-  version, schema violations, missing files, a capability id repeated inside one project). Each one is a
-  finding; every other project is still discovered.
+  version, schema violations, missing files, a capability id repeated inside one project), and a `.blux/`
+  holding a symbolic link, pipe or device (refused before anything is opened). Each one is a finding; every
+  other project is still discovered.
 - **Duplicates**: two directories declaring one `project_id`, or one capability id offered by different
   projects. BLUX would refuse to load both, so `describe` asks you to pick a project.
 - **Compatibility**: which providers satisfy a semver range (`^2.0.0`, `>=1.4 <3`, `1.*`, `||`) and can

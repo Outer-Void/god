@@ -2,7 +2,8 @@
 
 Every query rescans the roots for `.blux/` directories (a cheap, directory-only walk). A project's cached
 record is reused only if the stat signature of its `.blux/` (every file's size, mtime, ctime and inode, plus
-the directory's) is unchanged; otherwise it is re-read through the SDK. Projects that disappeared are
+the directory's) is unchanged and the entry is intact (its record still hashes to the digest stored with it);
+otherwise it is re-read through the SDK, so a damaged cache costs a rescan, never a crash. Projects that disappeared are
 dropped. The whole cache is discarded when GOD's or the SDK's version (or the supported contract versions)
 differ from the ones that wrote it, or when it is unreadable. `refresh` ignores the cache entirely.
 """
@@ -10,6 +11,7 @@ differ from the ones that wrote it, or when it is unreadable. `refresh` ignores 
 from __future__ import annotations
 
 import contextlib
+import hashlib
 import json
 import os
 import tempfile
@@ -92,6 +94,27 @@ def _write_cache(path: Path, entries: dict[str, Any]) -> None:
         raise GodError(ErrorCode.IO_ERROR, f"Cannot write the index {path}: {exc.strerror}.") from None
 
 
+def _digest(record: Any) -> str:
+    return hashlib.sha256(json.dumps(record, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
+
+
+def _entry(record: dict[str, Any], sig: dict[str, list[int]]) -> dict[str, Any]:
+    return {"sig": sig, "digest": _digest(record), "record": record}
+
+
+def _reusable(entry: Any, key: str, sig: dict[str, list[int]]) -> bool:
+    """A cached entry is used only if it is intact: written by GOD for this directory and not altered since."""
+    if not isinstance(entry, dict) or entry.get("sig") != sig:
+        return False
+    record = entry.get("record")
+    return (
+        isinstance(record, dict)
+        and record.get("kind") in ("project", "problem")
+        and record.get("root") == key
+        and entry.get("digest") == _digest(record)
+    )
+
+
 def _under(path: str, roots: list[Path]) -> bool:
     p = Path(path)
     return any(p == r or p.is_relative_to(r) for r in roots)
@@ -115,12 +138,12 @@ def build(roots: list[str] | list[Path], *, cache_path: Path | None = None, refr
         key = str(d)
         sig = projects.signature(d)
         entry = cached_entries.get(key)
-        if entry is not None and entry.get("sig") == sig:
+        if _reusable(entry, key, sig):
             hits += 1
             fresh[key] = entry
-        else:
+        else:  # new, changed on disk, or a damaged cache entry
             reloaded += 1
-            fresh[key] = {"sig": sig, "record": projects.load(d)}
+            fresh[key] = _entry(projects.load(d), sig)
     stale = [k for k in cached_entries if _under(k, root_paths) and k not in fresh]
     stats: dict[str, Any] = {
         "hits": hits,

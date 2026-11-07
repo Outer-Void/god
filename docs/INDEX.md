@@ -7,6 +7,7 @@ project directory GOD has seen:
 {"contract": "god.index", "version": 1,
  "generator": {"god": "2.0.0", "sdk": {"name": "blux-sdk", "version": "0.1.0", "contract_versions": ["1.0"]}},
  "entries": {"/abs/project": {"sig": {".": [...], "manifest.yaml": [size, mtime_ns, ctime_ns, inode], ...},
+                              "digest": "<sha256 of the record>",
                               "record": {"kind": "project", ...} | {"kind": "problem", ...}}}}
 ```
 
@@ -20,9 +21,13 @@ On every query (unless `--no-cache`):
 2. A cached entry is reused only if the signature of its `.blux/` is identical: the directory's mtime, ctime
    and inode, and every file's size, mtime, ctime and inode. Editing, adding, removing or renaming any file
    in `.blux/` changes it, and so does replacing the directory.
-3. Changed and new projects are re-read through the SDK. Cached entries under the roots that were not found
+3. An entry is reused only if it is also intact: an object whose record is for that directory and still
+   hashes to its `digest`. A damaged entry is re-read like a changed project (counted in `reloaded`) and
+   rewritten, so a corrupted cache costs a rescan, never a crash. Entries written before OV-51 have no digest
+   and are re-read once.
+4. Changed and new projects are re-read through the SDK. Cached entries under the roots that were not found
    are dropped. Entries for other roots are kept untouched.
-4. The whole cache is discarded (`reason: generator-changed`) when GOD's version, the SDK's version or the
+5. The whole cache is discarded (`reason: generator-changed`) when GOD's version, the SDK's version or the
    SDK's supported contract versions differ from the ones that wrote it, and (`unreadable`, `wrong-format`)
    when it cannot be parsed.
 

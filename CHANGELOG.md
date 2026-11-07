@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- **Malformed input (OV-51).** One hostile project could stop discovery of every project: a named pipe in
+  `.blux/` blocked `god check` for ever, a symbolic link was followed out of the project, and deeply nested YAML
+  ended the scan with a RecursionError traceback. GOD now refuses `.blux/` entries that are not regular files
+  or directories before opening anything (a `MALFORMED_INPUT` problem, `reason: not_a_regular_file`), even with
+  an older blux-sdk, and reports `nesting_too_deep`. A damaged index-cache entry crashed every later query; each
+  entry now carries a digest of its record and is re-read when it does not match. Tests:
+  `tests/test_hostile_input.py`.
+
 - **License.** The Outer-Void Proprietary License applies from 2026-10-25
   (Copyright (c) 2026 Outer-Void / Justadudeinspace (JADIS); contact outervoid.blux@gmail.com, fallback
   theoutervoid@outlook.com). Package metadata declares the matching `LicenseRef`. Copies and releases

@@ -74,6 +74,24 @@ def signature(root: Path) -> dict[str, list[int]]:
     return sig
 
 
+def _irregular(dot_blux: Path) -> str | None:
+    """The first entry of .blux/ that is neither a regular file nor a directory, checked before any file is
+    opened: reading a pipe blocks for ever, a device never ends, and a link can point outside the project.
+    The SDK refuses these too; checking here keeps GOD safe with older SDKs (they are allowed: <0.3)."""
+    try:
+        names = sorted(os.listdir(dot_blux))
+    except OSError:
+        return None  # the SDK reports it
+    for name in names:
+        try:
+            mode = (dot_blux / name).lstat().st_mode
+        except OSError:
+            continue
+        if not (stat.S_ISREG(mode) or stat.S_ISDIR(mode)):
+            return name
+    return None
+
+
 def _canonical(doc: Any) -> str:
     return json.dumps(doc, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
 
@@ -102,7 +120,17 @@ def load(root: Path) -> dict[str, Any]:
         st = (root / DOT_BLUX).lstat()
         if not stat.S_ISDIR(st.st_mode):
             return _problem(root, "INVALID_ENVELOPE", ".blux is not a directory (symlinks are not followed).", {})
+        odd = _irregular(root / DOT_BLUX)
+        if odd is not None:
+            return _problem(
+                root,
+                "MALFORMED_INPUT",
+                f"{odd} is not a regular file (symbolic links, pipes and devices in .blux/ are refused).",
+                {"reason": "not_a_regular_file", "file": odd},
+            )
         project = _dot_blux.load(root)
+    except RecursionError:  # an SDK older than OV-51 does not catch it
+        return _problem(root, "MALFORMED_INPUT", "Malformed input: nesting_too_deep.", {"reason": "nesting_too_deep"})
     except _BluxError as exc:
         details = dict(getattr(exc, "details", {}) or {})
         message = str(getattr(exc, "message", exc))
